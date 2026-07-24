@@ -1,0 +1,22 @@
+{
+  "appId": "com.endopredict.ai",
+  "appName": "EndoPredict AI",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "ios": {
+    "contentInset": "always",
+    "allowsLinkPreview": false,
+    "scrollEnabled": true,
+    "scheme": "EndoPredict"
+  },
+  "plugins": {
+    "Keyboard": {
+      "resize": "body",
+      "style": "DARK"
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "overlaysWebView": true
+    }
+  }
+}
