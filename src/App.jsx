@@ -5374,6 +5374,11 @@ export default function App() {
     }
     loadInitialData();
 
+    // Subscribe to Realtime Cloud Firestore Synchronization across Web & Mobile
+    const unsubPts = db.subscribePatients ? db.subscribePatients(setPatients) : null;
+    const unsubTth = db.subscribeTeeth ? db.subscribeTeeth(setTeeth) : null;
+    const unsubAppt = db.subscribeAppointments ? db.subscribeAppointments(setAppointments) : null;
+
     // Splash Screen Loading Animation
     let timer;
     if (showSplash) {
@@ -5388,7 +5393,12 @@ export default function App() {
         });
       }, 70);
     }
-    return () => clearInterval(timer);
+    return () => {
+      if (timer) clearInterval(timer);
+      if (unsubPts) unsubPts();
+      if (unsubTth) unsubTth();
+      if (unsubAppt) unsubAppt();
+    };
   }, [showSplash]);
 
   const handleLogout = () => {

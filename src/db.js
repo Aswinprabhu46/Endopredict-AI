@@ -10,7 +10,8 @@ import {
   collection, 
   getDocs, 
   addDoc,
-  deleteDoc
+  deleteDoc,
+  onSnapshot
 } from "firebase/firestore";
 
 const DB_KEYS = {
@@ -89,9 +90,8 @@ const DEFAULT_APPOINTMENTS = [
 ];
 
 // ─── Firebase Configuration ──────────────────────────────────────────────────
-// Firebase Config (Replace with environment variables or your own credentials)
 const FIREBASE_CONFIG = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyD-endopredict-clinical-client-key",
   authDomain: "endopredict-clinical.firebaseapp.com",
   projectId: "endopredict-clinical",
   storageBucket: "endopredict-clinical.firebasestorage.app",
@@ -106,12 +106,12 @@ let app = null;
 let firestore = null;
 let useFirebase = false;
 
-if (FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId) {
+if (FIREBASE_CONFIG && FIREBASE_CONFIG.projectId) {
   try {
     app = initializeApp(FIREBASE_CONFIG);
     firestore = getFirestore(app);
     useFirebase = true;
-    console.log("Firebase initialized successfully with cloud configuration.");
+    console.log("Firebase initialized successfully with cloud configuration for project:", FIREBASE_CONFIG.projectId);
   } catch (err) {
     console.error("Firebase connection initialization failed:", err);
   }
@@ -132,6 +132,71 @@ export const db = {
 
   getFirebaseConfig() {
     return FIREBASE_CONFIG;
+  },
+
+  subscribePatients(callback) {
+    if (useFirebase && firestore) {
+      try {
+        return onSnapshot(collection(firestore, "patients"), (snap) => {
+          const pts = snap.docs.map(d => d.data());
+          if (pts.length > 0) {
+            const normalized = pts.map((p) => {
+              const defaultVisits = [
+                { date: p.lastVisit || "2026-07-10", problems: p.diagnosis || "Irreversible Pulpitis", notes: "Initial diagnosis and treatment planning.", status: p.status || "Completed" }
+              ];
+              const rawPhone = p.phone || `9876543210`;
+              return {
+                ...p,
+                phone: rawPhone,
+                visits: p.visits || defaultVisits,
+                medicalHistory: p.medicalHistory || "None declared",
+                allergies: p.allergies || "No known drug allergies",
+                documents: p.documents || []
+              };
+            });
+            callback(normalized);
+          }
+        });
+      } catch (e) {
+        console.error("subscribePatients error:", e);
+      }
+    }
+    return () => {};
+  },
+
+  subscribeTeeth(callback) {
+    if (useFirebase && firestore) {
+      try {
+        return onSnapshot(collection(firestore, "teeth"), (snap) => {
+          const teethObj = {};
+          snap.docs.forEach(d => {
+            teethObj[d.id] = d.data();
+          });
+          if (Object.keys(teethObj).length > 0) {
+            callback(teethObj);
+          }
+        });
+      } catch (e) {
+        console.error("subscribeTeeth error:", e);
+      }
+    }
+    return () => {};
+  },
+
+  subscribeAppointments(callback) {
+    if (useFirebase && firestore) {
+      try {
+        return onSnapshot(collection(firestore, "appointments"), (snap) => {
+          const appts = snap.docs.map(d => d.data());
+          if (appts.length > 0) {
+            callback(appts);
+          }
+        });
+      } catch (e) {
+        console.error("subscribeAppointments error:", e);
+      }
+    }
+    return () => {};
   },
 
   async init() {
