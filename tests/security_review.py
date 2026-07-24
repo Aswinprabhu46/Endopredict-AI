@@ -454,7 +454,7 @@ def generate_excel(findings, project_root):
     return path
 
 
-# ── Markdown Executive Summary ────────────────────────────────────────────────
+# ── Markdown & Excel Executive Summary ─────────────────────────────────────────
 def generate_markdown_summary(findings, project_root):
     os.makedirs(SUMMARY_DIR, exist_ok=True)
 
@@ -509,6 +509,61 @@ def generate_markdown_summary(findings, project_root):
     summary_path = os.path.join(SUMMARY_DIR, "Executive_Summary.md")
     with open(summary_path, "w") as f:
         f.write("\n".join(lines))
+    
+    # Also generate HTML report for instant 1-click viewing in browser
+    html_content = f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>EndoPredict Security Review Summary</title>
+  <style>
+    body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 30px; background: #0f172a; color: #f8fafc; }}
+    h1 {{ color: #38bdf8; border-bottom: 2px solid #334155; padding-bottom: 10px; }}
+    .card {{ background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }}
+    table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
+    th, td {{ padding: 10px; text-align: left; border-bottom: 1px solid #334155; }}
+    th {{ background: #0284c7; color: white; }}
+    .crit {{ color: #ef4444; font-weight: bold; }}
+    .high {{ color: #f97316; font-weight: bold; }}
+    .med {{ color: #eab308; font-weight: bold; }}
+    .low {{ color: #3b82f6; font-weight: bold; }}
+  </style>
+</head>
+<body>
+  <h1>🛡️ EndoPredict AI — Vulnerability Security Review</h1>
+  <div class="card">
+    <h2>Summary Overview ({len(findings)} Findings)</h2>
+    <p><strong>Scan Date:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+    <table>
+      <tr><th>Severity</th><th>Count</th></tr>
+      <tr><td class="crit">🔴 Critical</td><td>{by_sev.get('Critical', 0)}</td></tr>
+      <tr><td class="high">🟠 High</td><td>{by_sev.get('High', 0)}</td></tr>
+      <tr><td class="med">🟡 Medium</td><td>{by_sev.get('Medium', 0)}</td></tr>
+      <tr><td class="low">🔵 Low</td><td>{by_sev.get('Low', 0)}</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Top High & Critical Security Issues</h2>
+    <table>
+      <tr><th>ID</th><th>Severity</th><th>Vulnerability</th><th>File Location</th><th>Remediation</th></tr>
+"""
+    for f in findings:
+        if f.severity in ("Critical", "High"):
+            sev_cls = "crit" if f.severity == "Critical" else "high"
+            html_content += f"""      <tr>
+        <td>{f.fid}</td>
+        <td class="{sev_cls}">{f.severity}</td>
+        <td>{f.vuln_type}</td>
+        <td><code>{f.file_path}:{f.line_no}</code></td>
+        <td>{f.remediation}</td>
+      </tr>\n"""
+    html_content += """    </table>
+  </div>
+</body>
+</html>"""
+    with open(os.path.join(SUMMARY_DIR, "Executive_Summary.html"), "w") as hf:
+        hf.write(html_content)
+
     return summary_path
 
 
@@ -523,6 +578,11 @@ if __name__ == "__main__":
 
         md_path = generate_markdown_summary(findings, PROJECT_ROOT)
         print(f"📝 Executive Summary: {md_path}")
+
+        # Copy Excel report into Vulnerability Test Results directory so it downloads as Excel
+        import shutil
+        shutil.copy(excel_path, os.path.join(SUMMARY_DIR, "Executive_Summary.xlsx"))
+        shutil.copy(excel_path, os.path.join(SUMMARY_DIR, "Security_Vulnerability_Report.xlsx"))
 
         print(f"\n✅ Static security review completed with {len(findings)} findings.")
     except Exception as e:
