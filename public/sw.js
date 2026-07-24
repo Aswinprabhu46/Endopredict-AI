@@ -1,4 +1,4 @@
-// Minimal service worker for PWA installation requirements
+// Service worker for EndoPredict PWA & Web Push Notifications
 const CACHE_NAME = 'endopredict-v1';
 const ASSETS = [
   '/',
@@ -52,5 +52,28 @@ self.addEventListener('fetch', (e) => {
       }
       return fetch(e.request);
     })
+  );
+});
+
+// Push notification event listener
+self.addEventListener('push', (e) => {
+  const data = e.data ? e.data.json() : { title: 'EndoPredict Clinical Alert', body: 'New high-risk clinical case notification' };
+  const options = {
+    body: data.body,
+    icon: '/favicon.svg',
+    badge: '/favicon.svg',
+    vibrate: [100, 50, 100],
+    data: data.url || '/'
+  };
+  e.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Notification click event handler
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  e.waitUntil(
+    clients.openWindow(e.notification.data || '/')
   );
 });
