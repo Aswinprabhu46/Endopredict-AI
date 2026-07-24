@@ -1,0 +1,61 @@
+name: EndoPredict iOS APM Performance Test Suite
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  ios-apm-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 📦 Install Node Dependencies
+        run: npm install
+
+      - name: 🚀 Start Vite Dev Server
+        run: |
+          npm run dev &
+          npx wait-on http://localhost:5173 --timeout 30000
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Install Python Test Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🌐 Install Google Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget curl unzip
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get install -fy
+
+      - name: 📱 Execute 315 iOS APM Mobile Performance Test Cases
+        env:
+          HEADLESS: "true"
+          TEST_BASE_URL: "http://localhost:5173/"
+        run: |
+          python tests/ios_apm_test.py
+
+      - name: 📊 Upload iOS APM Excel Test Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: EndoPredict-iOS-APM-Report
+          path: EndoPredict_iOS_APM_Test_Report.xlsx
+          retention-days: 30
