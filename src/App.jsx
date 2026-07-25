@@ -5877,20 +5877,6 @@ export default function App() {
               </div>
             </div>
           )}
-                  <option style={{ background: "#0F2042" }} value="General Dentist (BDS)">General Dentist (BDS)</option>
-                  <option style={{ background: "#0F2042" }} value="Oral Surgeon">Oral Surgeon</option>
-                  <option style={{ background: "#0F2042" }} value="Periodontist">Periodontist</option>
-                </select>
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 4, letterSpacing: 0.5 }}>License Number</label>
-                <input type="text" placeholder="e.g. TN-DCI-2024-9988" value={regLic} onChange={e => setRegLic(e.target.value)} required
-                  style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
-              </div>
-
-              <button type="submit" style={{ background: "linear-gradient(135deg, #1A73E8, #0D9488)", color: "#fff", border: "none", borderRadius: 8, padding: "10px", fontSize: 13, fontWeight: 700, cursor: "pointer", marginTop: 4 }}>Create Account</button>
-            </form>
-          )}
         </div>
       </div>
     );
