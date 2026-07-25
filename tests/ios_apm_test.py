@@ -13,16 +13,11 @@ Report Output: EndoPredict_iOS_APM_Test_Report.xlsx
 import sys
 import os
 import time
-import math
 import traceback
 from datetime import datetime
 
 # Import Selenium modules
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
