@@ -256,7 +256,7 @@ function getPremiumIcon(icon, color, size) {
 
 function Card({ children, style, onClick, hover }) {
   const [hovered, setHovered] = useState(false);
-  
+
   const glassStyle = {
     borderRadius: 14,
     padding: "1.25rem",
@@ -287,9 +287,9 @@ function Card({ children, style, onClick, hover }) {
   }
 
   return (
-    <div 
-      onClick={onClick} 
-      onMouseEnter={() => setHovered(true)} 
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={glassStyle}
     >
@@ -303,12 +303,12 @@ function MetricCard({ label, value, sub, color, icon, trend, t, isMobile, onClic
   const premiumIcon = getPremiumIcon(icon, finalColor, isMobile ? 18 : 22);
 
   return (
-    <Card 
+    <Card
       onClick={onClick}
-      style={{ 
-        background: t.surface, 
-        border: `1px solid ${t.border}`, 
-        boxShadow: t.cardShadow, 
+      style={{
+        background: t.surface,
+        border: `1px solid ${t.border}`,
+        boxShadow: t.cardShadow,
         padding: isMobile ? "12px" : "1.25rem",
         cursor: onClick ? "pointer" : "default",
       }}
@@ -320,15 +320,15 @@ function MetricCard({ label, value, sub, color, icon, trend, t, isMobile, onClic
           <p style={{ fontSize: isMobile ? 20 : 28, fontWeight: 700, color: finalColor, margin: 0, lineHeight: 1 }}>{value}</p>
           {sub && !isMobile && <p style={{ fontSize: 11, color: t.textSub, margin: "6px 0 0" }}>{sub}</p>}
         </div>
-        <span style={{ 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "center", 
-          width: isMobile ? 32 : 40, 
-          height: isMobile ? 32 : 40, 
-          borderRadius: "50%", 
-          background: `${finalColor}12`, 
-          border: `1px solid ${finalColor}20` 
+        <span style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: isMobile ? 32 : 40,
+          height: isMobile ? 32 : 40,
+          borderRadius: "50%",
+          background: `${finalColor}12`,
+          border: `1px solid ${finalColor}20`
         }}>
           {premiumIcon}
         </span>
@@ -915,9 +915,9 @@ function DentalMapPage({ t, darkMode, isMobile, teeth, setTeeth, patients, numbe
             <p style={{ margin: 0, fontSize: 12, color: t.textMuted }}>{numberingSystem === "Universal" ? "Universal Numbering System (#1-32)" : "FDI Numbering System (#11-48)"} · Click any tooth for details & AI analysis</p>
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "center", width: isMobile ? "100%" : "auto" }}>
-            <select 
-              value={numberingSystem} 
-              onChange={e => setNumberingSystem(e.target.value)} 
+            <select
+              value={numberingSystem}
+              onChange={e => setNumberingSystem(e.target.value)}
               style={{ background: t.surface2, border: `1px solid ${t.border}`, borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 600, color: t.textSub, outline: "none", cursor: "pointer", width: isMobile ? "100%" : "auto" }}
             >
               <option value="FDI">FDI System (#11-48)</option>
@@ -1552,7 +1552,7 @@ function Dashboard({ t, setActive, isMobile, patients, setPatients, appointments
                 )}
               </div>
               {p.emergencyAlert ? (
-                <button 
+                <button
                   onClick={async (e) => {
                     e.stopPropagation();
                     const newVisit = {
@@ -1562,8 +1562,8 @@ function Dashboard({ t, setActive, isMobile, patients, setPatients, appointments
                       status: "Completed"
                     };
                     const updatedVisits = [newVisit, ...(p.visits || [])];
-                    await db.updatePatient(p.id, { 
-                      emergencyAlert: false, 
+                    await db.updatePatient(p.id, {
+                      emergencyAlert: false,
                       emergencyDetails: "",
                       visits: updatedVisits,
                       status: "Post-op"
@@ -1958,11 +1958,12 @@ function Patients({ t, isMobile, patients, setPatients, teeth, setTeeth, selecte
 
       try {
         const apiKey = db.getGeminiKey ? db.getGeminiKey() : "";
-        
+
         let userParts = [];
         if (mimeType.startsWith("image/")) {
           userParts = [
-            { text: `You are EndoPredict AI, an expert radiological and clinical endodontic AI.
+            {
+              text: `You are EndoPredict AI, an expert radiological and clinical endodontic AI.
 Analyze this clinical image, photograph, or X-ray of the patient.
 Identify:
 1. Relevant dental anatomy and teeth.
@@ -1980,7 +1981,8 @@ Provide a beautifully structured clinical report in Markdown format. Keep it cle
           ];
         } else {
           userParts = [
-            { text: `You are EndoPredict AI, an expert clinical assistant.
+            {
+              text: `You are EndoPredict AI, an expert clinical assistant.
 Analyze the following patient clinical chart details or document data:
 "${file.name}"
 
@@ -2074,13 +2076,13 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
               <p style={{ margin: "0 0 12px", fontSize: 13, color: t.textMuted }}>{p.age} yrs · {p.gender === "M" ? "Male" : "Female"}</p>
               <Badge label={p.risk + " Risk"} color={getRiskColor(p.risk, t)} bg={getRiskBg(p.risk, t)} />
               <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
-                <button 
+                <button
                   onClick={() => { setShowConsultModal(true); setCallState("connecting"); setCallSeconds(0); setConsultTranscript([]); setConsultSummary(""); }}
                   style={{ flex: 1, background: t.accent, color: "#fff", border: "none", borderRadius: 8, padding: "8px 0", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
                 >
                   📹 Consult
                 </button>
-                <button 
+                <button
                   onClick={handleFocusNotes}
                   style={{ flex: 1, background: t.surface2, color: t.textSub, border: `1px solid ${t.border}`, borderRadius: 8, padding: "8px 0", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
                 >
@@ -2101,13 +2103,13 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Tab navigation */}
             <div style={{ display: "flex", background: t.surface, border: `1px solid ${t.border}`, borderRadius: 10, padding: 4, gap: 4 }}>
-              <button 
+              <button
                 onClick={() => { setActiveTab("records"); setSelectedDoc(null); }}
                 style={{ flex: 1, padding: "10px 0", fontSize: 13, fontWeight: 700, borderRadius: 8, cursor: "pointer", border: "none", background: activeTab === "records" ? t.accent : "transparent", color: activeTab === "records" ? "#fff" : t.textSub, transition: "all 0.3s" }}
               >
                 📋 Visit History & Records
               </button>
-              <button 
+              <button
                 onClick={() => { setActiveTab("documents"); setSelectedDoc(null); }}
                 style={{ flex: 1, padding: "10px 0", fontSize: 13, fontWeight: 700, borderRadius: 8, cursor: "pointer", border: "none", background: activeTab === "documents" ? t.accent : "transparent", color: activeTab === "documents" ? "#fff" : t.textSub, transition: "all 0.3s" }}
               >
@@ -2163,7 +2165,7 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
                   <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 14 }}>
                     <div>
                       <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: t.textMuted, marginBottom: 6 }}>Systemic Medical Conditions</label>
-                      <textarea 
+                      <textarea
                         value={editedMedHistory}
                         onChange={e => setEditedMedHistory(e.target.value)}
                         placeholder="e.g. Hypertension, Type-2 Diabetes controlled, NSAID tolerant"
@@ -2173,7 +2175,7 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: t.textMuted, marginBottom: 6 }}>Known Allergies</label>
-                      <textarea 
+                      <textarea
                         value={editedAllergies}
                         onChange={e => setEditedAllergies(e.target.value)}
                         placeholder="e.g. Penicillin, Latex, NSAID allergies"
@@ -2182,7 +2184,7 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
                       />
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={handleSaveMedHistory}
                     style={{ width: "100%", background: t.accentSoft, color: t.accent, border: `1px solid ${t.accent}30`, borderRadius: 8, padding: "10px", fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.3s" }}
                   >
@@ -2194,7 +2196,7 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
                 <Card style={{ background: t.surface, border: `1px solid ${t.border}`, boxShadow: t.cardShadow }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                     <h4 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: t.text, textTransform: "uppercase", letterSpacing: 0.5 }}>📅 Visit History Timeline</h4>
-                    <button 
+                    <button
                       onClick={() => setShowAddVisit(!showAddVisit)}
                       style={{ background: t.accent, color: "#fff", border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 11, fontWeight: 600, cursor: "pointer" }}
                     >
@@ -2254,30 +2256,30 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
                 {/* Upload Section */}
                 <Card style={{ background: t.surface, border: `1px solid ${t.border}`, boxShadow: t.cardShadow }}>
                   <h4 style={{ margin: "0 0 12px", fontSize: 13, fontWeight: 700, color: t.text, textTransform: "uppercase", letterSpacing: 0.5 }}>📸 Upload & Analyze Image/Document</h4>
-                  
-                  <div style={{ 
-                    border: `2px dashed ${docError ? t.danger : docSuccess ? t.success : t.border}`, 
-                    borderRadius: 12, 
-                    padding: 20, 
-                    textAlign: "center", 
-                    background: t.surface2, 
+
+                  <div style={{
+                    border: `2px dashed ${docError ? t.danger : docSuccess ? t.success : t.border}`,
+                    borderRadius: 12,
+                    padding: 20,
+                    textAlign: "center",
+                    background: t.surface2,
                     cursor: "pointer",
                     position: "relative",
                     marginBottom: 10
                   }}>
-                    <input 
-                      type="file" 
+                    <input
+                      type="file"
                       accept="image/*,text/*,.pdf"
                       onChange={handleDocUpload}
-                      style={{ 
-                        position: "absolute", 
-                        top: 0, 
-                        left: 0, 
-                        width: "100%", 
-                        height: "100%", 
-                        opacity: 0, 
-                        cursor: "pointer" 
-                      }} 
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        opacity: 0,
+                        cursor: "pointer"
+                      }}
                     />
                     <span style={{ fontSize: 32, display: "block", marginBottom: 8 }}>📁</span>
                     <p style={{ margin: "0 0 4px", fontSize: 13, color: t.text, fontWeight: 600 }}>
@@ -2302,13 +2304,13 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
                         <p style={{ margin: 0, fontSize: 11, color: t.textMuted, textAlign: "center", padding: "10px 0" }}>No documents uploaded yet.</p>
                       ) : (
                         (p.documents || []).map((doc, idx) => (
-                          <div 
+                          <div
                             key={idx}
                             onClick={() => setSelectedDoc(doc)}
-                            style={{ 
-                              padding: "8px 10px", 
-                              borderRadius: 8, 
-                              background: selectedDoc?.name === doc.name ? t.accentSoft : t.surface2, 
+                            style={{
+                              padding: "8px 10px",
+                              borderRadius: 8,
+                              background: selectedDoc?.name === doc.name ? t.accentSoft : t.surface2,
                               border: `1px solid ${selectedDoc?.name === doc.name ? t.accent : t.border}`,
                               cursor: "pointer",
                               fontSize: 12,
@@ -2340,24 +2342,24 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
                         {selectedDoc.type?.startsWith("image/") && selectedDoc.data && (
                           <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 16 }}>
                             <div style={{ textAlign: "center", background: "#000", borderRadius: 10, padding: 10 }}>
-                              <img 
-                                src={selectedDoc.data} 
-                                alt="Clinical File Preview" 
-                                style={{ 
-                                  maxHeight: 260, 
-                                  maxWidth: "100%", 
-                                  borderRadius: 6, 
+                              <img
+                                src={selectedDoc.data}
+                                alt="Clinical File Preview"
+                                style={{
+                                  maxHeight: 260,
+                                  maxWidth: "100%",
+                                  borderRadius: 6,
                                   objectFit: "contain",
                                   filter: `brightness(${docBrightness}%) contrast(${docContrast}%) invert(${docInvert ? 100 : 0}%) saturate(${docEnhance ? 150 : 100}%)`
-                                }} 
+                                }}
                               />
                             </div>
-                            
+
                             {/* Tuning Sliders panel inside Patient document list */}
                             <div style={{ background: t.surface2, border: `1px solid ${t.border}`, borderRadius: 10, padding: 12, display: "flex", flexDirection: "column", gap: 8 }}>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <span style={{ fontSize: 11, fontWeight: 700, color: t.text }}>🎛️ Radiography Tuning Filters</span>
-                                <button 
+                                <button
                                   onClick={() => { setDocBrightness(100); setDocContrast(100); setDocInvert(false); setDocEnhance(false); }}
                                   style={{ background: t.surface, border: `1px solid ${t.border}`, color: t.textSub, padding: "2px 8px", fontSize: 9, borderRadius: 4, cursor: "pointer", fontWeight: 600 }}
                                 >
@@ -2396,11 +2398,11 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
 
                         <div style={{ background: t.accentSoft, borderRadius: 10, padding: "14px 18px", border: `1px solid ${t.accent}30` }}>
                           <p style={{ margin: "0 0 10px", fontSize: 12, fontWeight: 800, color: t.accent, textTransform: "uppercase", letterSpacing: 0.5 }}>🧠 Gemini AI Radiological Insights & Report</p>
-                          <div 
-                            style={{ 
-                              fontSize: 13, 
-                              color: t.textSub, 
-                              lineHeight: 1.6, 
+                          <div
+                            style={{
+                              fontSize: 13,
+                              color: t.textSub,
+                              lineHeight: 1.6,
                               whiteSpace: "pre-line",
                               fontFamily: "Inter, sans-serif"
                             }}
@@ -2527,7 +2529,7 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
       {showConsultModal && selected && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(15, 23, 42, 0.85)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2000, padding: 20 }}>
           <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 20, width: "100%", maxWidth: 680, display: "flex", flexDirection: "column", height: "80vh", boxShadow: "0 20px 50px rgba(0,0,0,0.3)", overflow: "hidden" }}>
-            
+
             {/* Header */}
             <div style={{ padding: "16px 20px", borderBottom: `1px solid ${t.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", background: t.surface2 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -2545,10 +2547,10 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
             {/* Content Area */}
             {callState !== "ended" ? (
               <div style={{ flex: 1, display: "flex", flexDirection: isMobile ? "column" : "row", overflow: "hidden" }}>
-                
+
                 {/* Visual Video feeds (left/top) */}
                 <div style={{ flex: 1.2, background: "#0F172A", display: "flex", flexDirection: "column", padding: 14, justifyContent: "center", alignItems: "center", position: "relative", gap: 12 }}>
-                  
+
                   {callState === "connecting" ? (
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
                       <div style={{ width: 80, height: 80, borderRadius: "50%", background: "rgba(26, 115, 232, 0.2)", border: "2px solid #1A73E8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, animation: "pulse 2s infinite" }}>
@@ -2559,7 +2561,7 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
                   ) : (
                     // Live Call Layout: Split Video Screen
                     <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", gap: 10, justifyContent: "center" }}>
-                      
+
                       {/* Patient Screen */}
                       <div style={{ flex: 1, background: "#1E293B", borderRadius: 12, overflow: "hidden", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.05)" }}>
                         {!cameraOff ? (
@@ -2590,22 +2592,22 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
 
                       {/* Call Controls panel */}
                       <div style={{ display: "flex", justifyContent: "center", gap: 14, marginTop: 4 }}>
-                        <button 
-                          onClick={() => setMicMuted(!micMuted)} 
+                        <button
+                          onClick={() => setMicMuted(!micMuted)}
                           style={{ width: 38, height: 38, borderRadius: "50%", border: "none", background: micMuted ? "#EF4444" : "rgba(255,255,255,0.1)", color: "#fff", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center" }}
                           title={micMuted ? "Unmute Mic" : "Mute Mic"}
                         >
                           {micMuted ? "🔇" : "🎤"}
                         </button>
-                        <button 
-                          onClick={() => setCameraOff(!cameraOff)} 
+                        <button
+                          onClick={() => setCameraOff(!cameraOff)}
                           style={{ width: 38, height: 38, borderRadius: "50%", border: "none", background: cameraOff ? "#EF4444" : "rgba(255,255,255,0.1)", color: "#fff", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center" }}
                           title={cameraOff ? "Turn Video On" : "Turn Video Off"}
                         >
                           {cameraOff ? "❌📹" : "📹"}
                         </button>
-                        <button 
-                          onClick={() => { setCallState("ended"); setConsultSummary(`Telehealth Consult Summary: Patient reported severe throbbing pain on tooth ${selected.tooth}. Lingering sensitivity to heat, partially relieved by cold. Recommended Root Canal Treatment. Advised taking Ibuprofen 600mg as prescribed. Patient agreed to schedule an in-office appointment.`); }} 
+                        <button
+                          onClick={() => { setCallState("ended"); setConsultSummary(`Telehealth Consult Summary: Patient reported severe throbbing pain on tooth ${selected.tooth}. Lingering sensitivity to heat, partially relieved by cold. Recommended Root Canal Treatment. Advised taking Ibuprofen 600mg as prescribed. Patient agreed to schedule an in-office appointment.`); }}
                           style={{ width: 38, height: 38, borderRadius: "50%", border: "none", background: "#EF4444", color: "#fff", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center" }}
                           title="End Consultation"
                         >
@@ -2629,7 +2631,7 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
                       <span style={{ fontSize: 10, color: t.success, animation: "pulse 1.5s infinite" }}>● Transcribing Live</span>
                     )}
                   </div>
-                  
+
                   {/* Transcript Scroll Container */}
                   <div style={{ flex: 1, padding: 14, overflowY: "auto", display: "flex", flexDirection: "column", gap: 10 }}>
                     {consultTranscript.length === 0 ? (
@@ -2638,8 +2640,8 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
                       </div>
                     ) : (
                       consultTranscript.map((line, idx) => (
-                        <div key={idx} style={{ 
-                          fontSize: 12, 
+                        <div key={idx} style={{
+                          fontSize: 12,
                           alignSelf: line.sender === "system" ? "center" : line.sender === "doctor" ? "flex-end" : "flex-start",
                           background: line.sender === "system" ? "transparent" : line.sender === "doctor" ? t.accentSoft : t.surface,
                           color: line.sender === "system" ? t.textMuted : t.text,
@@ -2677,13 +2679,13 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
                 </div>
 
                 <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-                  <button 
+                  <button
                     onClick={() => setShowConsultModal(false)}
                     style={{ flex: 1, background: t.surface2, border: `1px solid ${t.border}`, borderRadius: 8, padding: "12px", fontSize: 13, color: t.textSub, fontWeight: 600, cursor: "pointer" }}
                   >
                     Discard Summary & Close
                   </button>
-                  <button 
+                  <button
                     onClick={handleSaveConsultSummary}
                     disabled={isSavingConsult || !consultSummary.trim()}
                     style={{ flex: 1, background: t.accent, color: "#fff", border: "none", borderRadius: 8, padding: "12px", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
@@ -2693,7 +2695,7 @@ Provide a structured clinical report in Markdown format. Keep it clear and profe
                 </div>
               </div>
             )}
-            
+
           </div>
         </div>
       )}
@@ -2747,7 +2749,7 @@ function AIPredictorPage({ t, isMobile, patients, setPatients, teeth, numberingS
 
   const validateAndCheckPhone = (value) => {
     let cleanedVal = value.replace(/[^\d+ ]/g, "");
-    
+
     // Auto-prepend +91 if user enters a 10-digit number starting with 6-9 without a prefix
     const digitsOnly = cleanedVal.replace(/\D/g, "");
     if (digitsOnly.length === 10 && /^[6-9]/.test(digitsOnly) && !cleanedVal.startsWith("+91") && !cleanedVal.startsWith("91") && !cleanedVal.startsWith("0")) {
@@ -2766,7 +2768,7 @@ function AIPredictorPage({ t, isMobile, patients, setPatients, teeth, numberingS
 
     const checkDigits = cleanedVal.replace(/\D/g, "");
     const indianRegex = /^(?:\+91|91|0)?[6-9]\d{9}$/;
-    
+
     if (!indianRegex.test(cleanedVal)) {
       setPhoneError("Invalid format. Must be a valid Indian mobile number.");
       return;
@@ -2805,7 +2807,7 @@ function AIPredictorPage({ t, isMobile, patients, setPatients, teeth, numberingS
     setTimeout(() => {
       setIsValidatingPhone(false);
       setCarrierInfo("🟢 Phone Number Status: Active & Verified");
-      
+
       const digitsOnly = form.phone.replace(/\D/g, "");
       const match = (patients || []).find(p => {
         if (!p.phone) return false;
@@ -2832,7 +2834,7 @@ function AIPredictorPage({ t, isMobile, patients, setPatients, teeth, numberingS
     reader.onloadend = async () => {
       const base64Data = reader.result;
       const mimeType = file.type;
-      
+
       try {
         const apiKey = db.getGeminiKey ? db.getGeminiKey() : "";
         const userParts = [
@@ -2844,7 +2846,7 @@ function AIPredictorPage({ t, isMobile, patients, setPatients, teeth, numberingS
             }
           }
         ];
-        
+
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -2854,7 +2856,7 @@ function AIPredictorPage({ t, isMobile, patients, setPatients, teeth, numberingS
         const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
         const clean = text.replace(/```json|```/g, "").trim();
         const verification = JSON.parse(clean);
-        
+
         if (verification && verification.is_dental_image === true) {
           setImageSuccess("🟢 Valid dental X-ray/photo verified by Gemini AI.");
           setForm(prev => ({ ...prev, xray: base64Data }));
@@ -2889,7 +2891,7 @@ function AIPredictorPage({ t, isMobile, patients, setPatients, teeth, numberingS
     let predResult;
     try {
       const apiKey = db.getGeminiKey ? db.getGeminiKey() : "";
-      
+
       const cleanToothNum = form.tooth.replace(/\D/g, "");
       const toothName = teeth && teeth[cleanToothNum] ? teeth[cleanToothNum].name : "Tooth #" + cleanToothNum;
 
@@ -2955,20 +2957,20 @@ Respond ONLY with a valid JSON block containing:
       predResult = JSON.parse(clean);
     } catch (err) {
       console.error("Gemini prediction failed, falling back:", err);
-      predResult = { 
-        pain_severity: form.pain >= 7 ? "Severe" : form.pain >= 4 ? "Moderate" : "Mild", 
-        pain_score_predicted: Math.min(10, form.pain + (form.prevRCT ? 2 : 1)), 
-        flareup_risk_percent: Math.min(100, form.pain * 10 + (form.swelling !== "None" ? 15 : 0) + (form.fever ? 20 : 0) + (form.prevRCT ? 10 : 0)), 
-        flareup_risk_level: form.pain >= 7 ? "High" : form.pain >= 4 ? "Moderate" : "Low", 
-        ai_confidence: 85, 
-        analgesic_recommendation: form.pain >= 7 ? "Ibuprofen 600mg q6h + Paracetamol 1g q8h" : "Ibuprofen 400mg q8h PRN", 
-        antibiotic_recommendation: form.fever || form.pus ? "Amoxicillin 500mg TDS x 5 days" : "Not indicated", 
-        followup_urgency: form.pain >= 8 ? "24h" : form.pain >= 6 ? "48h" : "7d", 
-        followup_priority: form.pain >= 8 ? "Emergency" : form.pain >= 6 ? "Urgent" : "Routine", 
-        key_risk_factors: [form.prevRCT ? "Previous RCT failure" : "Acute pulp status", form.swelling !== "None" ? "Pre-op swelling" : "VAS pain level", form.diabetes ? "Diabetic status" : "Normal systemic profile"], 
-        clinical_notes: "AI-predicted outcome (offline fallback). Monitor carefully due to high pre-operative pain score.", 
-        patient_instructions: "Apply cold compress. Take analgesics as prescribed.", 
-        icd_code: "K04.0", 
+      predResult = {
+        pain_severity: form.pain >= 7 ? "Severe" : form.pain >= 4 ? "Moderate" : "Mild",
+        pain_score_predicted: Math.min(10, form.pain + (form.prevRCT ? 2 : 1)),
+        flareup_risk_percent: Math.min(100, form.pain * 10 + (form.swelling !== "None" ? 15 : 0) + (form.fever ? 20 : 0) + (form.prevRCT ? 10 : 0)),
+        flareup_risk_level: form.pain >= 7 ? "High" : form.pain >= 4 ? "Moderate" : "Low",
+        ai_confidence: 85,
+        analgesic_recommendation: form.pain >= 7 ? "Ibuprofen 600mg q6h + Paracetamol 1g q8h" : "Ibuprofen 400mg q8h PRN",
+        antibiotic_recommendation: form.fever || form.pus ? "Amoxicillin 500mg TDS x 5 days" : "Not indicated",
+        followup_urgency: form.pain >= 8 ? "24h" : form.pain >= 6 ? "48h" : "7d",
+        followup_priority: form.pain >= 8 ? "Emergency" : form.pain >= 6 ? "Urgent" : "Routine",
+        key_risk_factors: [form.prevRCT ? "Previous RCT failure" : "Acute pulp status", form.swelling !== "None" ? "Pre-op swelling" : "VAS pain level", form.diabetes ? "Diabetic status" : "Normal systemic profile"],
+        clinical_notes: "AI-predicted outcome (offline fallback). Monitor carefully due to high pre-operative pain score.",
+        patient_instructions: "Apply cold compress. Take analgesics as prescribed.",
+        icd_code: "K04.0",
         evidence_basis: "AAE Guidelines 2024",
         xray_analysis: form.xray ? "X-ray analysis (offline fallback) indicates periapical radiolucency surrounding the root apex of FDI tooth #" + form.tooth + ". Widening of the periodontal ligament space is observed, correlating with symptomatic apical periodontitis. No horizontal root fracture is visible." : null
       };
@@ -3068,7 +3070,7 @@ Respond ONLY with a valid JSON block containing:
       doc.setFontSize(12);
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
       doc.text("PATIENT PROFILE", 20, y);
-      
+
       // Box background for profile
       doc.setFillColor(248, 250, 252);
       doc.rect(20, y + 3, pageWidth - 40, 30, "F");
@@ -3076,7 +3078,7 @@ Respond ONLY with a valid JSON block containing:
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.setTextColor(mutedColor[0], mutedColor[1], mutedColor[2]);
-      
+
       doc.text("Patient Name:", 25, y + 10);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
@@ -3133,7 +3135,7 @@ Respond ONLY with a valid JSON block containing:
         const cx = 20 + idx * (cardWidth + 3);
         doc.setFillColor(248, 250, 252);
         doc.rect(cx, y + 3, cardWidth, cardHeight, "F");
-        
+
         // Color top border
         doc.setFillColor(c.color[0], c.color[1], c.color[2]);
         doc.rect(cx, y + 3, cardWidth, 2, "F");
@@ -3190,7 +3192,7 @@ Respond ONLY with a valid JSON block containing:
       doc.setFontSize(12);
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
       doc.text("KEY CLINICAL RISK FACTORS", 20, y);
-      
+
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
@@ -3419,7 +3421,7 @@ Respond ONLY with a valid JSON block containing:
       doc.setFontSize(9);
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.text("Special Instructions:", 18, y);
-      
+
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8.5);
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
@@ -3484,14 +3486,14 @@ Respond ONLY with a valid JSON block containing:
           </div>
         </div>
         {/* Patient and Tooth Details Summary Card */}
-        <div style={{ 
-          background: t.surface, 
-          border: `1px solid ${t.border}`, 
-          borderRadius: 12, 
-          padding: "16px 20px", 
-          marginBottom: 20, 
-          display: "grid", 
-          gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)", 
+        <div style={{
+          background: t.surface,
+          border: `1px solid ${t.border}`,
+          borderRadius: 12,
+          padding: "16px 20px",
+          marginBottom: 20,
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)",
           gap: 12,
           boxShadow: t.cardShadow
         }}>
@@ -3561,20 +3563,20 @@ Respond ONLY with a valid JSON block containing:
             <h4 style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 700, color: t.text }}>📸 Verified Clinical Image & Radiographic Contrast Filters</h4>
             <div style={{ display: "flex", gap: 20, flexDirection: isMobile ? "column" : "row" }}>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
-                <img 
-                  src={form.xray} 
-                  alt="Verified Dental X-ray" 
-                  style={{ 
-                    maxWidth: 220, 
-                    maxHeight: 220, 
-                    borderRadius: 10, 
-                    objectFit: "contain", 
-                    border: `1px solid ${t.border}`, 
+                <img
+                  src={form.xray}
+                  alt="Verified Dental X-ray"
+                  style={{
+                    maxWidth: 220,
+                    maxHeight: 220,
+                    borderRadius: 10,
+                    objectFit: "contain",
+                    border: `1px solid ${t.border}`,
                     background: "#000",
                     filter: `brightness(${brightness}%) contrast(${contrast}%) invert(${invert ? 100 : 0}%) saturate(${enhance ? 150 : 100}%)`
-                  }} 
+                  }}
                 />
-                <button 
+                <button
                   onClick={() => { setBrightness(100); setContrast(100); setInvert(false); setEnhance(false); }}
                   style={{ background: t.surface2, border: `1px solid ${t.border}`, color: t.textSub, padding: "4px 10px", fontSize: 11, borderRadius: 6, cursor: "pointer", fontWeight: 600 }}
                 >
@@ -3583,7 +3585,7 @@ Respond ONLY with a valid JSON block containing:
               </div>
               <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
                 <p style={{ margin: 0, fontSize: 12, color: t.textSub, fontWeight: 600 }}>🎛️ Radiography Tuning Sliders:</p>
-                
+
                 {/* Brightness Slider */}
                 <div>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: t.textMuted, marginBottom: 4 }}>
@@ -3659,14 +3661,14 @@ Respond ONLY with a valid JSON block containing:
                   <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: t.text }}>💊 Digital Prescription Pad</h3>
                   <p style={{ margin: 0, fontSize: 11, color: t.textMuted }}>Draft prescription slip and export as signed PDF</p>
                 </div>
-                <button 
+                <button
                   onClick={() => setShowRxModal(false)}
                   style={{ background: "none", border: "none", fontSize: 22, color: t.textMuted, cursor: "pointer" }}
                 >
                   ✕
                 </button>
               </div>
-              
+
               <div style={{ flex: 1, overflowY: "auto", padding: "20px 24px", display: "flex", flexDirection: "column", gap: 14 }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                   <div>
@@ -3707,13 +3709,13 @@ Respond ONLY with a valid JSON block containing:
               </div>
 
               <div style={{ padding: "14px 24px", borderTop: `1px solid ${t.border}`, background: t.surface2, display: "flex", justifyContent: "flex-end", gap: 10 }}>
-                <button 
+                <button
                   onClick={() => setShowRxModal(false)}
                   style={{ background: t.surface, border: `1px solid ${t.border}`, color: t.textSub, borderRadius: 8, padding: "8px 16px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   onClick={handleExportRxPDF}
                   style={{ background: t.success, color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
                 >
@@ -3743,36 +3745,36 @@ Respond ONLY with a valid JSON block containing:
             </label>
             <div style={{ display: "flex", gap: 10 }}>
               <div style={{ position: "relative", flex: 1 }}>
-                <input 
-                  type="text" 
-                  placeholder="e.g. +91 98765 43210 (Indian Numbers Only)" 
-                  value={form.phone} 
-                  onChange={e => validateAndCheckPhone(e.target.value)} 
-                  style={{ 
-                    width: "100%", 
-                    background: t.surface2, 
-                    border: `1px solid ${phoneError ? t.danger : phoneSuccess.includes('Found') ? t.success : t.border}`, 
-                    borderRadius: 8, 
-                    padding: "10px 14px", 
-                    fontSize: 13, 
-                    color: t.text, 
-                    outline: "none", 
-                    boxSizing: "border-box" 
-                  }} 
+                <input
+                  type="text"
+                  placeholder="e.g. +91 98765 43210 (Indian Numbers Only)"
+                  value={form.phone}
+                  onChange={e => validateAndCheckPhone(e.target.value)}
+                  style={{
+                    width: "100%",
+                    background: t.surface2,
+                    border: `1px solid ${phoneError ? t.danger : phoneSuccess.includes('Found') ? t.success : t.border}`,
+                    borderRadius: 8,
+                    padding: "10px 14px",
+                    fontSize: 13,
+                    color: t.text,
+                    outline: "none",
+                    boxSizing: "border-box"
+                  }}
                 />
               </div>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={handleVerifyPhone}
                 disabled={isValidatingPhone}
-                style={{ 
-                  background: t.accentSoft, 
-                  color: t.accent, 
-                  border: `1px solid ${t.accent}30`, 
-                  borderRadius: 8, 
-                  padding: "0 16px", 
-                  fontSize: 12, 
-                  fontWeight: 700, 
+                style={{
+                  background: t.accentSoft,
+                  color: t.accent,
+                  border: `1px solid ${t.accent}30`,
+                  borderRadius: 8,
+                  padding: "0 16px",
+                  fontSize: 12,
+                  fontWeight: 700,
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
@@ -3790,13 +3792,13 @@ Respond ONLY with a valid JSON block containing:
 
           {/* Matched Patient Clinical History */}
           {matchedPatient && (
-            <div style={{ 
-              background: `${t.accentSoft}30`, 
-              borderLeft: `4px solid ${t.accent}`, 
-              borderRadius: 8, 
-              padding: "14px 16px", 
-              marginBottom: 20, 
-              boxShadow: "inset 0 1px 2px rgba(0,0,0,0.05)" 
+            <div style={{
+              background: `${t.accentSoft}30`,
+              borderLeft: `4px solid ${t.accent}`,
+              borderRadius: 8,
+              padding: "14px 16px",
+              marginBottom: 20,
+              boxShadow: "inset 0 1px 2px rgba(0,0,0,0.05)"
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: t.text }}>📋 Previous Medical Record (Matched Patient)</span>
@@ -3818,28 +3820,28 @@ Respond ONLY with a valid JSON block containing:
             <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: t.textSub, marginBottom: 8 }}>
               Upload Tooth Photo or X-ray
             </label>
-            <div style={{ 
-              border: `2px dashed ${imageError ? t.danger : imageSuccess ? t.success : t.border}`, 
-              borderRadius: 12, 
-              padding: 20, 
-              textAlign: "center", 
-              background: t.surface2, 
+            <div style={{
+              border: `2px dashed ${imageError ? t.danger : imageSuccess ? t.success : t.border}`,
+              borderRadius: 12,
+              padding: 20,
+              textAlign: "center",
+              background: t.surface2,
               cursor: "pointer",
               position: "relative"
             }}>
-              <input 
-                type="file" 
+              <input
+                type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
-                style={{ 
-                  position: "absolute", 
-                  top: 0, 
-                  left: 0, 
-                  width: "100%", 
-                  height: "100%", 
-                  opacity: 0, 
-                  cursor: "pointer" 
-                }} 
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  opacity: 0,
+                  cursor: "pointer"
+                }}
               />
               <span style={{ fontSize: 32, display: "block", marginBottom: 8 }}>📸</span>
               <p style={{ margin: "0 0 4px", fontSize: 13, color: t.text, fontWeight: 600 }}>
@@ -3852,18 +3854,18 @@ Respond ONLY with a valid JSON block containing:
             {isCheckingImage && <p style={{ margin: "6px 0 0", fontSize: 11, color: t.accent, fontWeight: 600 }}>🔍 Analyzing image with Gemini AI...</p>}
             {imageError && <p style={{ margin: "6px 0 0", fontSize: 11, color: t.danger, fontWeight: 600 }}>⚠️ {imageError}</p>}
             {imageSuccess && <p style={{ margin: "6px 0 0", fontSize: 11, color: t.success, fontWeight: 600 }}>{imageSuccess}</p>}
-            
+
             {form.xray && (
               <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10 }}>
-                <img 
-                  src={form.xray} 
-                  alt="Uploaded X-ray" 
-                  style={{ width: 80, height: 80, borderRadius: 8, objectFit: "cover", border: `1px solid ${t.border}` }} 
+                <img
+                  src={form.xray}
+                  alt="Uploaded X-ray"
+                  style={{ width: 80, height: 80, borderRadius: 8, objectFit: "cover", border: `1px solid ${t.border}` }}
                 />
                 <div>
                   <p style={{ margin: "0 0 2px", fontSize: 12, color: t.text, fontWeight: 600 }}>Image Attached</p>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => setForm(prev => ({ ...prev, xray: "" }))}
                     style={{ background: "none", border: "none", color: t.danger, padding: 0, fontSize: 11, cursor: "pointer", fontWeight: 600 }}
                   >
@@ -3888,9 +3890,9 @@ Respond ONLY with a valid JSON block containing:
                 {numberingSystem === "Universal" ? "Tooth Number (Universal)" : "Tooth Number (FDI)"}
               </label>
               <div style={{ display: "flex", gap: 8, alignItems: "center", width: "100%" }}>
-                <select 
-                  value={form.tooth} 
-                  onChange={e => setForm({ ...form, tooth: e.target.value })} 
+                <select
+                  value={form.tooth}
+                  onChange={e => setForm({ ...form, tooth: e.target.value })}
                   style={{ width: "100%", background: t.surface2, border: `1px solid ${t.border}`, borderRadius: 8, padding: "9px 12px", fontSize: 13, color: t.text, outline: "none" }}
                 >
                   {Object.keys(teeth).sort().map(fdiNum => {
@@ -3962,7 +3964,7 @@ function Analytics({ t, isMobile, patients }) {
 
   const actualPatients = patients || [];
   const totalPatients = actualPatients.length > 0 ? actualPatients.length : 312;
-  
+
   // Calculate average pain score dynamically
   const totalPain = actualPatients.reduce((sum, pt) => sum + (parseInt(pt.pain) || 0), 0);
   const avgPain = actualPatients.length > 0 ? (totalPain / actualPatients.length).toFixed(1) : "5.1";
@@ -4033,7 +4035,7 @@ function Analytics({ t, isMobile, patients }) {
 
       {/* Operational & Practice Metrics */}
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20, marginTop: 20, marginBottom: 20 }}>
-        
+
         <Card style={{ background: t.surface, border: `1px solid ${t.border}`, boxShadow: t.cardShadow }}>
           <h4 style={{ margin: "0 0 16px", fontSize: 14, fontWeight: 700, color: t.text }}>📊 Operational & Practice Metrics</h4>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
@@ -4101,19 +4103,19 @@ function Analytics({ t, isMobile, patients }) {
                 <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: t.text }}>📋 Patient Details & Statistics</h3>
                 <p style={{ margin: 0, fontSize: 12, color: t.textMuted }}>Full registry analysis & clinical averages</p>
               </div>
-              <button 
+              <button
                 onClick={() => setShowPatientsList(false)}
                 style={{ background: "none", border: "none", fontSize: 22, color: t.textMuted, cursor: "pointer" }}
               >
                 ✕
               </button>
             </div>
-            
+
             {/* Search and Stats Grid */}
             <div style={{ padding: "16px 24px", background: t.surface2, borderBottom: `1px solid ${t.border}`, display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: 16, alignItems: "center" }}>
-              <input 
-                type="text" 
-                placeholder="Search patient or diagnosis..." 
+              <input
+                type="text"
+                placeholder="Search patient or diagnosis..."
                 value={modalSearch}
                 onChange={e => setModalSearch(e.target.value)}
                 style={{ flex: 1, minWidth: 200, background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, padding: "8px 14px", fontSize: 13, color: t.text, outline: "none" }}
@@ -4166,7 +4168,7 @@ function Analytics({ t, isMobile, patients }) {
             </div>
 
             <div style={{ padding: "14px 24px", borderTop: `1px solid ${t.border}`, background: t.surface2, display: "flex", justifyContent: "flex-end" }}>
-              <button 
+              <button
                 onClick={() => setShowPatientsList(false)}
                 style={{ background: t.accent, color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
               >
@@ -4683,23 +4685,23 @@ function AppointmentsPage({ t, isMobile, appointments, setAppointments, patients
         setCountdownText("No remaining appointments today.");
         return;
       }
-      
+
       const now = new Date();
       const match = next.time.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
       if (!match) {
         setCountdownText(`Next up: ${next.patient}`);
         return;
       }
-      
+
       let hours = parseInt(match[1]);
       const minutes = parseInt(match[2]);
       const meridian = match[3].toUpperCase();
       if (meridian === "PM" && hours !== 12) hours += 12;
       if (meridian === "AM" && hours === 12) hours = 0;
-      
+
       const apptDate = new Date();
       apptDate.setHours(hours, minutes, 0, 0);
-      
+
       const diffMs = apptDate - now;
       if (diffMs < 0) {
         const minutesPast = Math.floor(Math.abs(diffMs) / 60000);
@@ -4711,7 +4713,7 @@ function AppointmentsPage({ t, isMobile, appointments, setAppointments, patients
         setCountdownText(`⏳ Next Up: ${next.patient} in ${hoursLeft > 0 ? `${hoursLeft}h ` : ""}${minsLeft}m ${secsLeft}s`);
       }
     };
-    
+
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
     return () => clearInterval(interval);
@@ -4786,7 +4788,7 @@ function AppointmentsPage({ t, isMobile, appointments, setAppointments, patients
 
   return (
     <div style={{ padding: isMobile ? "16px" : "24px 28px", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 20 }}>
-      
+
       {/* Header and Add Button */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
@@ -4801,7 +4803,7 @@ function AppointmentsPage({ t, isMobile, appointments, setAppointments, patients
         <div style={{ position: "absolute", right: 16, top: 16, fontSize: 32, opacity: 0.15 }}>⏰</div>
         <p style={{ margin: "0 0 4px", fontSize: 11, textTransform: "uppercase", letterSpacing: 1, color: "rgba(255,255,255,0.7)" }}>TIMELINE COUNTER</p>
         <h4 style={{ margin: "0 0 14px", fontSize: 15, fontWeight: 700 }}>{countdownText}</h4>
-        
+
         {/* Progress Bar */}
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 4, color: "rgba(255,255,255,0.8)" }}>
@@ -4819,7 +4821,7 @@ function AppointmentsPage({ t, isMobile, appointments, setAppointments, patients
         {sortedAppts.map((appt, i) => {
           const typeInfo = getTypeColorInfo(appt.type, t);
           const initials = getInitials(appt.patient);
-          
+
           // Calculate if there is a gap between this appointment and the next
           const nextAppt = sortedAppts[i + 1];
           let gapElement = null;
@@ -4850,12 +4852,12 @@ function AppointmentsPage({ t, isMobile, appointments, setAppointments, patients
             <Fragment key={appt.originalIndex}>
               {/* Timeline Row */}
               <div style={{ display: "flex", gap: 14, alignItems: "stretch" }}>
-                
+
                 {/* Left Time Marker */}
                 <div style={{ width: 64, display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
                   <span style={{ fontSize: 13, fontWeight: 800, color: t.accent }}>{appt.time}</span>
                   <span style={{ fontSize: 10, color: t.textMuted }}>{appt.duration || 45} mins</span>
-                  
+
                   {/* Vertical Timeline Thread */}
                   <div style={{ flex: 1, width: 2, background: t.border, margin: "6px 0" }} />
                 </div>
@@ -4873,7 +4875,7 @@ function AppointmentsPage({ t, isMobile, appointments, setAppointments, patients
                     justifyContent: "space-between",
                     gap: 12
                   }}>
-                    
+
                     {/* Patient Avatar & Details */}
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       <div style={{
@@ -4921,7 +4923,7 @@ function AppointmentsPage({ t, isMobile, appointments, setAppointments, patients
                     </div>
 
                     {/* Manage Button */}
-                    <button 
+                    <button
                       onClick={() => handleOpenManageModal(appt.originalIndex, appt)}
                       style={{
                         background: t.surface2,
@@ -4941,7 +4943,7 @@ function AppointmentsPage({ t, isMobile, appointments, setAppointments, patients
                   </Card>
                 </div>
               </div>
-              
+
               {/* Optional Break Gap element */}
               {gapElement}
             </Fragment>
@@ -5032,8 +5034,8 @@ function AppointmentsPage({ t, isMobile, appointments, setAppointments, patients
             <div style={{ background: t.accentSoft, padding: "10px 14px", borderRadius: 8, border: `1px solid ${t.accent}30` }}>
               <p style={{ margin: "0 0 2px", fontSize: 10, color: t.accent, fontWeight: 700, textTransform: "uppercase" }}>Patient Profile</p>
               <p style={{ margin: "0 0 6px", fontSize: 14, fontWeight: 700, color: t.text }}>{appointments[selectedApptIdx].patient}</p>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => handleViewPatientRecord(appointments[selectedApptIdx].patient)}
                 style={{ background: "none", border: "none", color: t.accent, padding: 0, fontSize: 11, fontWeight: 700, textDecoration: "underline", cursor: "pointer" }}
               >
@@ -5163,11 +5165,11 @@ function PatientPortal({ patient, setPatient, setPatientPortalMode, t, isMobile,
 
   const handleSaveDiary = async (e) => {
     e.preventDefault();
-    
+
     // Append symptom diary entry to patient's visits timeline
     const entryProblems = `Symptom Diary: Pain Score ${painLevel}/10${swelling ? " with Swelling" : ""}`;
     const entryNotes = patientNotes.trim() ? `Notes: ${patientNotes.trim()}` : "Daily comfort log.";
-    
+
     const newVisit = {
       date: diaryDate,
       problems: entryProblems,
@@ -5176,9 +5178,9 @@ function PatientPortal({ patient, setPatient, setPatientPortalMode, t, isMobile,
     };
 
     const updatedVisits = [newVisit, ...(patient.visits || [])];
-    
+
     const isEmergency = painLevel >= 7 || swelling;
-    const emergencyDetails = isEmergency 
+    const emergencyDetails = isEmergency
       ? `Severe pain (${painLevel}/10)${swelling ? " and swelling" : ""} logged on ${diaryDate}. Notes: ${patientNotes}`
       : "";
 
@@ -5222,7 +5224,7 @@ function PatientPortal({ patient, setPatient, setPatientPortalMode, t, isMobile,
               <p style={{ margin: 0, fontSize: 11, color: "#8B949E" }}>EndoPredict AI Platform</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => { setPatient(null); setPatientPortalMode(false); }}
             style={{ background: "rgba(255,255,255,0.08)", color: "#FF4D4D", border: "none", borderRadius: 8, padding: "6px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer" }}
           >
@@ -5245,11 +5247,11 @@ function PatientPortal({ patient, setPatient, setPatientPortalMode, t, isMobile,
         <form onSubmit={handleSaveDiary} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
             <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 6 }}>Log Date</label>
-            <input 
-              type="date" 
-              required 
-              value={diaryDate} 
-              onChange={e => setDiaryDate(e.target.value)} 
+            <input
+              type="date"
+              required
+              value={diaryDate}
+              onChange={e => setDiaryDate(e.target.value)}
               style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }}
             />
           </div>
@@ -5261,12 +5263,12 @@ function PatientPortal({ patient, setPatient, setPatientPortalMode, t, isMobile,
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ fontSize: 12, color: "#10B981" }}>Mild</span>
-              <input 
-                type="range" 
-                min="0" 
-                max="10" 
-                value={painLevel} 
-                onChange={e => setPainLevel(parseInt(e.target.value))} 
+              <input
+                type="range"
+                min="0"
+                max="10"
+                value={painLevel}
+                onChange={e => setPainLevel(parseInt(e.target.value))}
                 style={{ flex: 1, cursor: "pointer", accentColor: getSliderColor(painLevel) }}
               />
               <span style={{ fontSize: 12, color: "#EF4444" }}>Severe</span>
@@ -5279,7 +5281,7 @@ function PatientPortal({ patient, setPatient, setPatientPortalMode, t, isMobile,
                 <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase" }}>Swelling Present?</label>
                 <p style={{ margin: 0, fontSize: 10, color: "#8B949E" }}>Indicate if you feel any new visible swelling in the gum area</p>
               </div>
-              <button 
+              <button
                 type="button"
                 onClick={() => setSwelling(!swelling)}
                 style={{ background: swelling ? "#EF4444" : "rgba(255,255,255,0.08)", border: "none", borderRadius: 8, padding: "8px 16px", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
@@ -5291,7 +5293,7 @@ function PatientPortal({ patient, setPatient, setPatientPortalMode, t, isMobile,
 
           <div>
             <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 6 }}>Comfort Notes / Specific Problems</label>
-            <textarea 
+            <textarea
               rows={3}
               value={patientNotes}
               onChange={e => setPatientNotes(e.target.value)}
@@ -5300,8 +5302,8 @@ function PatientPortal({ patient, setPatient, setPatientPortalMode, t, isMobile,
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             style={{ background: painLevel >= 7 || swelling ? "linear-gradient(135deg, #EF4444, #F59E0B)" : "linear-gradient(135deg, #1A73E8, #0D9488)", color: "#fff", border: "none", borderRadius: 8, padding: "12px", fontSize: 13, fontWeight: 700, cursor: "pointer", marginTop: 4, boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}
           >
             {painLevel >= 7 || swelling ? "🚨 Save Diary (Emergency Alert)" : "💾 Save Comfort Diary"}
@@ -5648,11 +5650,11 @@ export default function App() {
   // Patient Portal Dashboard Rendering
   if (currentPatient) {
     return (
-      <PatientPortal 
-        patient={currentPatient} 
-        setPatient={setCurrentPatient} 
-        setPatientPortalMode={setPatientPortalMode} 
-        t={t} 
+      <PatientPortal
+        patient={currentPatient}
+        setPatient={setCurrentPatient}
+        setPatientPortalMode={setPatientPortalMode}
+        t={t}
         isMobile={isMobile}
         setPatients={setPatients}
       />
@@ -5692,17 +5694,17 @@ export default function App() {
             {patientLoginError && <div style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, padding: 10, fontSize: 12, color: "#EF4444", fontWeight: 500 }}>{patientLoginError}</div>}
             <div>
               <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 6, letterSpacing: 0.5 }}>Patient Mobile Number</label>
-              <input 
-                type="text" 
-                placeholder="e.g. +91 98765 43210" 
-                value={patientLoginPhone} 
-                onChange={e => handlePatientLoginPhoneChange(e.target.value)} 
+              <input
+                type="text"
+                placeholder="e.g. +91 98765 43210"
+                value={patientLoginPhone}
+                onChange={e => handlePatientLoginPhoneChange(e.target.value)}
                 required
-                style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} 
+                style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }}
               />
             </div>
             <button type="submit" style={{ background: "linear-gradient(135deg, #1A73E8, #0D9488)", color: "#fff", border: "none", borderRadius: 8, padding: "12px", fontSize: 13, fontWeight: 700, cursor: "pointer", marginTop: 4 }}>Access Symptom Diary</button>
-            
+
             <div style={{ textAlign: "center", marginTop: 10 }}>
               <button type="button" onClick={() => { setPatientPortalMode(false); setPatientLoginError(""); }} style={{ background: "none", border: "none", color: "#8B949E", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>
                 ← Return to Clinician Sign In
@@ -5937,7 +5939,7 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("demographics");
   const [saveSuccess, setSaveSuccess] = useState("");
-  
+
   // General Info / Registry Fields
   const [formName, setFormName] = useState("");
   const [formAge, setFormAge] = useState("");
@@ -5949,7 +5951,7 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
   const [formPain, setFormPain] = useState(0);
   const [formStatus, setFormStatus] = useState("Scheduled");
   const [formFollowup, setFormFollowup] = useState("7d");
-  
+
   // Tab 1: Patient Information & History
   const [dob, setDob] = useState("");
   const [emergencyName, setEmergencyName] = useState("");
@@ -6015,7 +6017,7 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
   const [recallReminder, setRecallReminder] = useState("");
   const [restorationWarranty, setRestorationWarranty] = useState("12 months");
   const [invoices, setInvoices] = useState([]);
-  
+
   const [prescMedicine, setPrescMedicine] = useState("Amoxicillin 500mg");
   const [prescDosage, setPrescDosage] = useState("1 tab three times a day after food");
   const [prescDuration, setPrescDuration] = useState("5 days");
@@ -6360,7 +6362,7 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
     const newMsg = { sender: "You", text: chatInput };
     setPeerMessages([...peerMessages, newMsg]);
     setChatInput("");
-    
+
     // Automated reply from peer doctor
     setTimeout(() => {
       setPeerMessages(prev => [...prev, {
@@ -6391,26 +6393,26 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
 
   return (
     <div style={{ display: "flex", flex: 1, gap: 20, padding: isMobile ? 12 : "24px 28px", height: "100%", overflow: "hidden", flexDirection: isMobile ? "column" : "row", boxSizing: "border-box" }}>
-      
+
       {/* Sidebar - Case Selector */}
-      <div style={{ 
-        width: isMobile ? "100%" : 260, 
-        display: "flex", 
-        flexDirection: "column", 
-        gap: 14, 
-        background: t.surface, 
-        border: `1px solid ${t.border}`, 
-        borderRadius: 16, 
-        padding: 16, 
-        backdropFilter: "blur(12px)", 
-        zIndex: 1, 
+      <div style={{
+        width: isMobile ? "100%" : 260,
+        display: "flex",
+        flexDirection: "column",
+        gap: 14,
+        background: t.surface,
+        border: `1px solid ${t.border}`,
+        borderRadius: 16,
+        padding: 16,
+        backdropFilter: "blur(12px)",
+        zIndex: 1,
         height: isMobile ? "auto" : "100%",
         boxSizing: "border-box",
         boxShadow: t.cardShadow
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h3 style={{ margin: 0, fontSize: 14, fontWeight: 800, color: t.text }}>Registry Index</h3>
-          <button 
+          <button
             onClick={handleAddNewCase}
             style={{ background: t.accentSoft, border: "none", color: t.accent, padding: "6px 12px", borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: "pointer" }}
           >
@@ -6418,9 +6420,9 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
           </button>
         </div>
 
-        <input 
-          type="text" 
-          placeholder="Search patient..." 
+        <input
+          type="text"
+          placeholder="Search patient..."
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           style={{ width: "100%", background: t.surface2, border: `1px solid ${t.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 13, color: t.text, outline: "none", boxSizing: "border-box" }}
@@ -6459,17 +6461,17 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
       </div>
 
       {/* Main Sheet Form */}
-      <div style={{ 
-        flex: 1, 
-        display: "flex", 
-        flexDirection: "column", 
-        background: t.surface, 
-        border: `1px solid ${t.border}`, 
-        borderRadius: 16, 
-        padding: 20, 
-        backdropFilter: "blur(12px)", 
-        zIndex: 1, 
-        height: "100%", 
+      <div style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        background: t.surface,
+        border: `1px solid ${t.border}`,
+        borderRadius: 16,
+        padding: 20,
+        backdropFilter: "blur(12px)",
+        zIndex: 1,
+        height: "100%",
         boxSizing: "border-box",
         boxShadow: t.cardShadow,
         overflow: "hidden"
@@ -6528,7 +6530,7 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
 
         {/* Tab Content Section */}
         <form onSubmit={handleSaveCaseFile} style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 20, paddingBottom: 16 }}>
-          
+
           {/* TAB 1: Demographics */}
           {activeTab === "demographics" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -6587,10 +6589,10 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)", gap: 10, marginBottom: 12 }}>
                   {Object.keys(systemicDiseases).map(cond => (
                     <label key={cond} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, textTransform: "capitalize", cursor: "pointer" }}>
-                      <input 
-                        type="checkbox" 
-                        checked={systemicDiseases[cond]} 
-                        onChange={e => setSystemicDiseases({ ...systemicDiseases, [cond]: e.target.checked })} 
+                      <input
+                        type="checkbox"
+                        checked={systemicDiseases[cond]}
+                        onChange={e => setSystemicDiseases({ ...systemicDiseases, [cond]: e.target.checked })}
                       />
                       {cond}
                     </label>
@@ -6613,10 +6615,10 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 10, marginBottom: 12 }}>
                   {Object.keys(habits).map(h => (
                     <label key={h} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, textTransform: "capitalize", cursor: "pointer" }}>
-                      <input 
-                        type="checkbox" 
-                        checked={habits[h]} 
-                        onChange={e => setHabits({ ...habits, [h]: e.target.checked })} 
+                      <input
+                        type="checkbox"
+                        checked={habits[h]}
+                        onChange={e => setHabits({ ...habits, [h]: e.target.checked })}
                       />
                       {h}
                     </label>
@@ -6728,7 +6730,7 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
               {/* Diagnostic X-rays & Photos Simulation */}
               <Card style={{ background: t.surface2, border: `1px solid ${t.border}` }}>
                 <h4 style={{ margin: "0 0 12px", fontSize: 12, fontWeight: 700, color: t.text }}>📸 Diagnostic Data & Imaging (OPG, IOPA, CBCT, Photos)</h4>
-                
+
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
                   <button type="button" onClick={() => handleSimulateXray("opg")} style={{ background: t.accentSoft, border: `1px solid ${t.accent}20`, color: t.accent, borderRadius: 6, padding: "6px 12px", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
                     ⚡ Capture OPG Scan
@@ -6813,9 +6815,9 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
               <Card style={{ background: t.surface2, border: `1px solid ${t.border}` }}>
                 <h4 style={{ margin: "0 0 8px", fontSize: 12, fontWeight: 700, color: t.text }}>🦷 Tooth-by-Tooth Interactive Plan Chart</h4>
                 <p style={{ margin: "0 0 16px", fontSize: 11, color: t.textMuted }}>Select a tooth to formulate specific treatment mapping.</p>
-                
+
                 <div style={{ display: "flex", gap: 20, flexDirection: isMobile ? "column" : "row" }}>
-                  
+
                   {/* Dental arch selectors grid */}
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: t.textMuted, fontWeight: 700 }}>
@@ -6930,8 +6932,8 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
                     </div>
                     <div>
                       <label style={{ fontSize: 10, color: t.textMuted, display: "block", marginBottom: 4 }}>Assigned Treatment</label>
-                      <select 
-                        value={toothChartPlan[activeChartTooth] || "None"} 
+                      <select
+                        value={toothChartPlan[activeChartTooth] || "None"}
                         onChange={e => {
                           const proc = e.target.value;
                           setToothChartPlan({ ...toothChartPlan, [activeChartTooth]: proc });
@@ -6953,8 +6955,8 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
                       <>
                         <div>
                           <label style={{ fontSize: 10, color: t.textMuted, display: "block", marginBottom: 4 }}>Treatment Status</label>
-                          <select 
-                            value={toothChartStatus[activeChartTooth] || "Planned"} 
+                          <select
+                            value={toothChartStatus[activeChartTooth] || "Planned"}
                             onChange={e => setToothChartStatus({ ...toothChartStatus, [activeChartTooth]: e.target.value })}
                             style={{ width: "100%", background: t.surface2, border: `1px solid ${t.border}`, borderRadius: 6, padding: "6px 8px", fontSize: 12, color: t.text }}
                           >
@@ -7196,7 +7198,7 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
           {activeTab === "prescriptions" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
-                
+
                 {/* Prescription Form builder */}
                 <Card style={{ background: t.surface2, border: `1px solid ${t.border}`, display: "flex", flexDirection: "column", gap: 10 }}>
                   <h4 style={{ margin: 0, fontSize: 12, fontWeight: 700, color: t.text }}>💊 Prescription Builder</h4>
@@ -7293,7 +7295,7 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
                       <li>Avoid chewing gum or sticky foods on the treated side.</li>
                     </ul>
                   </div>
-                  
+
                   <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 10, padding: 14 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                       <span style={{ fontSize: 10, fontWeight: 700, color: t.teal, background: t.tealSoft, padding: "2px 6px", borderRadius: 4 }}>POST-OP: SCALING / CLEANING</span>
@@ -7315,7 +7317,7 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
           {activeTab === "lab" && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
-                
+
                 {/* Lab Slip Orders */}
                 <Card style={{ background: t.surface2, border: `1px solid ${t.border}`, display: "flex", flexDirection: "column", gap: 10 }}>
                   <h4 style={{ margin: 0, fontSize: 12, fontWeight: 700, color: t.text }}>🧪 Lab Integration Work Order</h4>
@@ -7362,11 +7364,11 @@ function PatientCaseFilePage({ t, isMobile, patients, setPatients, teeth, setTee
                 <Card style={{ background: t.surface2, border: `1px solid ${t.border}`, display: "flex", flexDirection: "column", gap: 10 }}>
                   <h4 style={{ margin: 0, fontSize: 12, fontWeight: 700, color: t.text }}>✍️ Electronic Patient Waiver & Consent</h4>
                   <p style={{ margin: 0, fontSize: 10, color: t.textMuted }}>I authorize root canal / extraction procedure. Risks, benefits, and costs explained.</p>
-                  
+
                   <div style={{ position: "relative", width: "100%", height: 100, background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, overflow: "hidden" }}>
-                    <canvas 
-                      ref={canvasRef} 
-                      width={300} 
+                    <canvas
+                      ref={canvasRef}
+                      width={300}
                       height={100}
                       onMouseDown={startDrawing}
                       onMouseMove={draw}
