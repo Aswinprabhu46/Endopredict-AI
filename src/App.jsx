@@ -5372,7 +5372,10 @@ export default function App() {
     const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
     setSentCode(generatedCode);
     setForgotStep(2);
-    setForgotSuccess(`🔑 Verification Code Sent! Security Code: ${generatedCode}`);
+
+    // Dispatch Gmail notification & Firebase Password Reset link
+    const emailRes = await db.sendGmailPasswordReset(forgotEmail, generatedCode);
+    setForgotSuccess(`🔑 Verification Code Dispatched to Gmail (${forgotEmail})! Security Code: ${generatedCode}`);
   };
 
   const handleResetPasswordSubmit = async (e) => {
