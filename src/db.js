@@ -1930,22 +1930,20 @@ export const db = {
           }
         }
 
-        // Patients collection
-        const patientsCol = collection(firestore, "patients");
-        const patientsSnap = await getDocs(patientsCol);
-        if (patientsSnap.empty) {
-          for (const p of DEFAULT_PATIENTS) {
-            await setDoc(doc(firestore, "patients", String(p.id)), p);
+        // Patients collection - ensure all 100 patients exist in Firebase Cloud Firestore
+        for (const p of DEFAULT_PATIENTS) {
+          try {
+            await setDoc(doc(firestore, "patients", String(p.id)), p, { merge: true });
+          } catch (e) {
+            console.error(`Error setting patient doc ${p.id}:`, e);
           }
         }
 
         // Teeth collection
-        const teethCol = collection(firestore, "teeth");
-        const teethSnap = await getDocs(teethCol);
-        if (teethSnap.empty) {
-          for (const [id, t] of Object.entries(DEFAULT_TEETH)) {
-            await setDoc(doc(firestore, "teeth", String(id)), t);
-          }
+        for (const [id, t] of Object.entries(DEFAULT_TEETH)) {
+          try {
+            await setDoc(doc(firestore, "teeth", String(id)), t, { merge: true });
+          } catch (e) {}
         }
 
         // Appointments collection
@@ -1960,6 +1958,27 @@ export const db = {
         console.error("Error seeding Firebase Firestore database collections:", err);
       }
     }
+  },
+
+  async forceSyncAllToFirebase() {
+    if (useFirebase && firestore) {
+      let count = 0;
+      for (const p of DEFAULT_PATIENTS) {
+        try {
+          await setDoc(doc(firestore, "patients", String(p.id)), p, { merge: true });
+          count++;
+        } catch (e) {
+          console.error("forceSyncAllToFirebase patient error:", e);
+        }
+      }
+      for (const [id, t] of Object.entries(DEFAULT_TEETH)) {
+        try {
+          await setDoc(doc(firestore, "teeth", String(id)), t, { merge: true });
+        } catch (e) {}
+      }
+      return { success: true, count };
+    }
+    return { success: false, message: "Firebase is not initialized." };
   },
 
   // ─── Users Table CRUD ──────────────────────────────────────────────────────
