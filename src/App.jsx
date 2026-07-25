@@ -5345,6 +5345,63 @@ export default function App() {
   const [regSuccess, setRegSuccess] = useState("");
   const [regError, setRegError] = useState("");
 
+  // Forgot Password fields & handlers
+  const [isForgotMode, setIsForgotMode] = useState(false);
+  const [forgotStep, setForgotStep] = useState(1);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [sentCode, setSentCode] = useState("");
+  const [inputCode, setInputCode] = useState("");
+  const [forgotNewPassword, setForgotNewPassword] = useState("");
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState("");
+  const [forgotError, setForgotError] = useState("");
+  const [forgotSuccess, setForgotSuccess] = useState("");
+
+  const handleSendVerificationCode = async (e) => {
+    e.preventDefault();
+    setForgotError("");
+    setForgotSuccess("");
+    if (!forgotEmail || !forgotEmail.includes("@")) {
+      setForgotError("Please enter a valid user email address.");
+      return;
+    }
+    const exists = await db.checkEmailExists(forgotEmail);
+    if (!exists) {
+      setForgotError("No account found with this email address. Please check your email or Register.");
+      return;
+    }
+    const generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+    setSentCode(generatedCode);
+    setForgotStep(2);
+    setForgotSuccess(`🔑 Verification Code Sent! Security Code: ${generatedCode}`);
+  };
+
+  const handleResetPasswordSubmit = async (e) => {
+    e.preventDefault();
+    setForgotError("");
+    setForgotSuccess("");
+    if (inputCode.trim() !== sentCode.trim()) {
+      setForgotError("Invalid verification code! Please enter the 6-digit security code provided.");
+      return;
+    }
+    if (forgotNewPassword.length < 6) {
+      setForgotError("New password must be at least 6 characters long.");
+      return;
+    }
+    if (forgotNewPassword !== forgotConfirmPassword) {
+      setForgotError("New password and Confirm Password do not match.");
+      return;
+    }
+    const res = await db.resetUserPassword(forgotEmail, forgotNewPassword);
+    if (res.success) {
+      setForgotStep(3);
+      setLoginEmail(forgotEmail);
+      setLoginPassword(forgotNewPassword);
+      setForgotSuccess("✅ Password successfully updated! You can now sign in with your new password.");
+    } else {
+      setForgotError(res.message || "Failed to update password. Please try again.");
+    }
+  };
+
   // Persistent States
   const [patients, setPatients] = useState([]);
   const [teeth, setTeeth] = useState({});
@@ -5683,61 +5740,143 @@ export default function App() {
             <p style={{ margin: 0, fontSize: 12, color: "#8B949E" }}>Clinical Decision & Patient Management</p>
           </div>
 
-          <div style={{ display: "flex", gap: 6, background: "rgba(255,255,255,0.05)", padding: 4, borderRadius: 8, marginBottom: 20 }}>
-            <button onClick={() => { setIsRegistering(false); setLoginError(""); }} style={{ flex: 1, background: !isRegistering ? "rgba(255,255,255,0.12)" : "transparent", border: "none", borderRadius: 6, padding: "8px 0", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Sign In</button>
-            <button onClick={() => { setIsRegistering(true); setRegError(""); setRegSuccess(""); }} style={{ flex: 1, background: isRegistering ? "rgba(255,255,255,0.12)" : "transparent", border: "none", borderRadius: 6, padding: "8px 0", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Register</button>
-          </div>
-
-          {!isRegistering ? (
-            <form onSubmit={handleLoginSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              {loginError && <div style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, padding: 10, fontSize: 12, color: "#EF4444", fontWeight: 500 }}>{loginError}</div>}
-              <div>
-                <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 6, letterSpacing: 0.5 }}>User Email ID</label>
-                <input type="email" placeholder="doctor@clinic.com" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} required
-                  style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 6, letterSpacing: 0.5 }}>Password</label>
-                <input type="password" placeholder="••••••••" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} required
-                  style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
+          {!isForgotMode ? (
+            <>
+              <div style={{ display: "flex", gap: 6, background: "rgba(255,255,255,0.05)", padding: 4, borderRadius: 8, marginBottom: 20 }}>
+                <button onClick={() => { setIsRegistering(false); setLoginError(""); }} style={{ flex: 1, background: !isRegistering ? "rgba(255,255,255,0.12)" : "transparent", border: "none", borderRadius: 6, padding: "8px 0", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Sign In</button>
+                <button onClick={() => { setIsRegistering(true); setRegError(""); setRegSuccess(""); }} style={{ flex: 1, background: isRegistering ? "rgba(255,255,255,0.12)" : "transparent", border: "none", borderRadius: 6, padding: "8px 0", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Register</button>
               </div>
 
-              <button type="submit" style={{ background: "linear-gradient(135deg, #1A73E8, #7C3AED)", color: "#fff", border: "none", borderRadius: 8, padding: "12px", fontSize: 13, fontWeight: 700, cursor: "pointer", marginTop: 4, boxShadow: "0 4px 12px rgba(26,115,232,0.2)" }}>Sign In to Platform</button>
+              {!isRegistering ? (
+                <form onSubmit={handleLoginSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  {loginError && <div style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, padding: 10, fontSize: 12, color: "#EF4444", fontWeight: 500 }}>{loginError}</div>}
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 6, letterSpacing: 0.5 }}>User Email ID</label>
+                    <input type="email" placeholder="doctor@clinic.com" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} required
+                      style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
+                  </div>
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                      <label style={{ fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", letterSpacing: 0.5 }}>Password</label>
+                      <button type="button" onClick={() => { setIsForgotMode(true); setForgotStep(1); setForgotEmail(loginEmail || "drkumar@endopredict.com"); setForgotError(""); setForgotSuccess(""); }} style={{ background: "none", border: "none", color: "#58A6FF", fontSize: 11, cursor: "pointer", textDecoration: "underline", fontWeight: 600 }}>Forgot Password?</button>
+                    </div>
+                    <input type="password" placeholder="••••••••" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} required
+                      style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
+                  </div>
 
-              <div style={{ textAlign: "center", margin: "6px 0 0" }}>
-                <button type="button" onClick={fillDemoCreds} style={{ background: "none", border: "none", color: "#2DD4BF", fontSize: 12, cursor: "pointer", textDecoration: "underline", fontWeight: 600 }}>Use Demo Doctor Account</button>
+                  <button type="submit" style={{ background: "linear-gradient(135deg, #1A73E8, #7C3AED)", color: "#fff", border: "none", borderRadius: 8, padding: "12px", fontSize: 13, fontWeight: 700, cursor: "pointer", marginTop: 4, boxShadow: "0 4px 12px rgba(26,115,232,0.2)" }}>Sign In to Platform</button>
+
+                  <div style={{ textAlign: "center", margin: "6px 0 0" }}>
+                    <button type="button" onClick={fillDemoCreds} style={{ background: "none", border: "none", color: "#2DD4BF", fontSize: 12, cursor: "pointer", textDecoration: "underline", fontWeight: 600 }}>Use Demo Doctor Account</button>
+                  </div>
+
+                  <div style={{ textAlign: "center", marginTop: 12, borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 12 }}>
+                    <button type="button" onClick={() => { setPatientPortalMode(true); setLoginError(""); }} style={{ background: "none", border: "none", color: "#8B949E", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>
+                      🔑 Access Patient Symptom Portal
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <form onSubmit={handleRegisterSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {regError && <div style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, padding: 10, fontSize: 12, color: "#EF4444", fontWeight: 500 }}>{regError}</div>}
+                  {regSuccess && <div style={{ background: "rgba(16,185,129,0.15)", border: "1px solid rgba(16,185,129,0.3)", borderRadius: 8, padding: 10, fontSize: 12, color: "#10B981", fontWeight: 500 }}>{regSuccess}</div>}
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 4, letterSpacing: 0.5 }}>Full Name</label>
+                    <input type="text" placeholder="Dr. Jane Doe" value={regName} onChange={e => setRegName(e.target.value)} required
+                      style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 4, letterSpacing: 0.5 }}>Email ID</label>
+                    <input type="email" placeholder="jane@clinic.com" value={regEmail} onChange={e => setRegEmail(e.target.value)} required
+                      style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 4, letterSpacing: 0.5 }}>Password</label>
+                    <input type="password" placeholder="••••••••" value={regPassword} onChange={e => setRegPassword(e.target.value)} required
+                      style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 4, letterSpacing: 0.5 }}>Specialization</label>
+                    <select value={regSpec} onChange={e => setRegSpec(e.target.value)}
+                      style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#fff", outline: "none" }}>
+                      <option style={{ background: "#0F2042" }} value="Endodontist (MDS)">Endodontist (MDS)</option>
+                      <option style={{ background: "#0F2042" }} value="General Dentist (BDS)">General Dentist (BDS)</option>
+                      <option style={{ background: "#0F2042" }} value="Prosthodontist">Prosthodontist</option>
+                      <option style={{ background: "#0F2042" }} value="Periodontist">Periodontist</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 4, letterSpacing: 0.5 }}>License Number</label>
+                    <input type="text" placeholder="TN-DCI-2024-XXXX" value={regLic} onChange={e => setRegLic(e.target.value)} required
+                      style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
+                  </div>
+                  <button type="submit" style={{ background: "linear-gradient(135deg, #10B981, #0D9488)", color: "#fff", border: "none", borderRadius: 8, padding: "10px", fontSize: 13, fontWeight: 700, cursor: "pointer", marginTop: 4 }}>Register Account</button>
+                </form>
+              )}
+            </>
+          ) : (
+            /* Forgot Password 3-Step Verification View */
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ textAlign: "center", marginBottom: 6 }}>
+                <h3 style={{ margin: "0 0 4px", fontSize: 16, fontWeight: 700, color: "#38BDF8" }}>🔑 Reset Your Password</h3>
+                <p style={{ margin: 0, fontSize: 11, color: "#8B949E" }}>Step {forgotStep} of 3 — Secure Verification</p>
               </div>
 
-              <div style={{ textAlign: "center", marginTop: 12, borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 12 }}>
-                <button type="button" onClick={() => { setPatientPortalMode(true); setLoginError(""); }} style={{ background: "none", border: "none", color: "#8B949E", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>
-                  🔑 Access Patient Symptom Portal
+              {forgotError && <div style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, padding: 10, fontSize: 12, color: "#EF4444", fontWeight: 500 }}>{forgotError}</div>}
+              {forgotSuccess && <div style={{ background: "rgba(16,185,129,0.15)", border: "1px solid rgba(16,185,129,0.3)", borderRadius: 8, padding: 10, fontSize: 12, color: "#10B981", fontWeight: 600 }}>{forgotSuccess}</div>}
+
+              {forgotStep === 1 && (
+                <form onSubmit={handleSendVerificationCode} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 6, letterSpacing: 0.5 }}>Registered Email Address</label>
+                    <input type="email" placeholder="drkumar@endopredict.com" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)} required
+                      style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
+                  </div>
+                  <button type="submit" style={{ background: "linear-gradient(135deg, #1A73E8, #0D9488)", color: "#fff", border: "none", borderRadius: 8, padding: "12px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(26,115,232,0.2)" }}>
+                    📩 Send 6-Digit Verification Code
+                  </button>
+                </form>
+              )}
+
+              {forgotStep === 2 && (
+                <form onSubmit={handleResetPasswordSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#2DD4BF", textTransform: "uppercase", marginBottom: 6, letterSpacing: 0.5 }}>Enter 6-Digit Verification Code</label>
+                    <input type="text" placeholder="e.g. 482915" value={inputCode} onChange={e => setInputCode(e.target.value)} required maxLength={6}
+                      style={{ width: "100%", background: "rgba(45,212,191,0.1)", border: "1px solid rgba(45,212,191,0.3)", borderRadius: 8, padding: "10px 14px", fontSize: 16, fontWeight: 700, letterSpacing: 4, color: "#2DD4BF", textAlign: "center", outline: "none", boxSizing: "border-box" }} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 6, letterSpacing: 0.5 }}>New Password</label>
+                    <input type="password" placeholder="••••••••" value={forgotNewPassword} onChange={e => setForgotNewPassword(e.target.value)} required minLength={6}
+                      style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 6, letterSpacing: 0.5 }}>Confirm New Password</label>
+                    <input type="password" placeholder="••••••••" value={forgotConfirmPassword} onChange={e => setForgotConfirmPassword(e.target.value)} required minLength={6}
+                      style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
+                  </div>
+                  <button type="submit" style={{ background: "linear-gradient(135deg, #10B981, #7C3AED)", color: "#fff", border: "none", borderRadius: 8, padding: "12px", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(16,185,129,0.2)" }}>
+                    💾 Save New Password & Update Account
+                  </button>
+                </form>
+              )}
+
+              {forgotStep === 3 && (
+                <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 12 }}>
+                  <button type="button" onClick={() => { setIsForgotMode(false); setIsRegistering(false); setForgotStep(1); setForgotError(""); setForgotSuccess(""); }}
+                    style={{ background: "linear-gradient(135deg, #1A73E8, #10B981)", color: "#fff", border: "none", borderRadius: 8, padding: "12px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                    Sign In Now with New Password ➔
+                  </button>
+                </div>
+              )}
+
+              <div style={{ textAlign: "center", marginTop: 8, borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 10 }}>
+                <button type="button" onClick={() => { setIsForgotMode(false); setForgotStep(1); setForgotError(""); setForgotSuccess(""); }} style={{ background: "none", border: "none", color: "#8B949E", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>
+                  ← Back to Sign In Screen
                 </button>
               </div>
-            </form>
-          ) : (
-            <form onSubmit={handleRegisterSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {regError && <div style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, padding: 10, fontSize: 12, color: "#EF4444", fontWeight: 500 }}>{regError}</div>}
-              {regSuccess && <div style={{ background: "rgba(16,185,129,0.15)", border: "1px solid rgba(16,185,129,0.3)", borderRadius: 8, padding: 10, fontSize: 12, color: "#10B981", fontWeight: 500 }}>{regSuccess}</div>}
-              <div>
-                <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 4, letterSpacing: 0.5 }}>Full Name</label>
-                <input type="text" placeholder="Dr. Jane Doe" value={regName} onChange={e => setRegName(e.target.value)} required
-                  style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 4, letterSpacing: 0.5 }}>Email ID</label>
-                <input type="email" placeholder="jane@clinic.com" value={regEmail} onChange={e => setRegEmail(e.target.value)} required
-                  style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 4, letterSpacing: 0.5 }}>Password</label>
-                <input type="password" placeholder="••••••••" value={regPassword} onChange={e => setRegPassword(e.target.value)} required
-                  style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#fff", outline: "none", boxSizing: "border-box" }} />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#8B949E", textTransform: "uppercase", marginBottom: 4, letterSpacing: 0.5 }}>Specialization</label>
-                <select value={regSpec} onChange={e => setRegSpec(e.target.value)}
-                  style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "8px 12px", fontSize: 13, color: "#fff", outline: "none" }}>
-                  <option style={{ background: "#0F2042" }} value="Endodontist (MDS)">Endodontist (MDS)</option>
+            </div>
+          )}
                   <option style={{ background: "#0F2042" }} value="General Dentist (BDS)">General Dentist (BDS)</option>
                   <option style={{ background: "#0F2042" }} value="Oral Surgeon">Oral Surgeon</option>
                   <option style={{ background: "#0F2042" }} value="Periodontist">Periodontist</option>

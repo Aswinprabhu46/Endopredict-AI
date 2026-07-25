@@ -2052,6 +2052,52 @@ export const db = {
     return raw ? JSON.parse(raw) : null;
   },
 
+  async checkEmailExists(email) {
+    if (!email || !email.trim()) return false;
+    const cleanEmail = email.toLowerCase().trim();
+    if (useFirebase && firestore) {
+      try {
+        const userDocRef = doc(firestore, "users", cleanEmail);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) return true;
+      } catch (err) {
+        console.error("Firebase checkEmailExists error:", err);
+      }
+    }
+    const users = JSON.parse(localStorage.getItem(DB_KEYS.USERS)) || [];
+    return users.some(u => u.email.toLowerCase() === cleanEmail);
+  },
+
+  async resetUserPassword(email, newPassword) {
+    if (!email || !newPassword) return { success: false, message: "Missing email or new password" };
+    const cleanEmail = email.toLowerCase().trim();
+    if (useFirebase && firestore) {
+      try {
+        const userDocRef = doc(firestore, "users", cleanEmail);
+        await setDoc(userDocRef, { password: newPassword }, { merge: true });
+      } catch (err) {
+        console.error("Firebase resetUserPassword error:", err);
+      }
+    }
+    const users = JSON.parse(localStorage.getItem(DB_KEYS.USERS)) || [];
+    const idx = users.findIndex(u => u.email.toLowerCase() === cleanEmail);
+    if (idx !== -1) {
+      users[idx].password = newPassword;
+      localStorage.setItem(DB_KEYS.USERS, JSON.stringify(users));
+    } else {
+      // Add default user if missing locally
+      users.push({
+        email: cleanEmail,
+        password: newPassword,
+        name: cleanEmail.split("@")[0],
+        specialization: "Endodontist (MDS)",
+        license: "TN-DCI-2026-9999"
+      });
+      localStorage.setItem(DB_KEYS.USERS, JSON.stringify(users));
+    }
+    return { success: true };
+  },
+
   setCurrentUser(user) {
     localStorage.setItem(DB_KEYS.CURRENT_USER, JSON.stringify(user));
   },
