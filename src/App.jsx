@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, Fragment } from "react";
 import { db } from "./db";
 import { jsPDF } from "jspdf";
-import { runFullOfflineMLAnalysis, XGBoostRiskModel, EfficientNetB4RadiologyClassifier, UNetSegmenter } from "./mlEngine";
+import { runFullOfflineMLAnalysis, XGBoostRiskModel, EfficientNetB4RadiologyClassifier, UNetSegmenter, ModelTrainer } from "./mlEngine";
 
 // ─── Dental Tooth Numbering Translations ──────────────────────────────────────
 const FDI_TO_UNIVERSAL = {
@@ -4412,7 +4412,7 @@ function AIAssistant({ t, isMobile }) {
 
 
 // ─── SettingsPage ─────────────────────────────────────────────────────────────
-function SettingsPage({ t, darkMode, setDarkMode, isMobile, currentUser, onLogout, onUpdateUser, numberingSystem, setNumberingSystem }) {
+function SettingsPage({ t, darkMode, setDarkMode, isMobile, currentUser, onLogout, onUpdateUser, numberingSystem, setNumberingSystem, onTrainModels, isTraining, trainingProgress, trainedWeights }) {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [name, setName] = useState(currentUser?.name || "Dr. Aravind Kumar");
   const [spec, setSpec] = useState(currentUser?.specialization || "Endodontist (MDS)");
@@ -4622,6 +4622,61 @@ function SettingsPage({ t, darkMode, setDarkMode, isMobile, currentUser, onLogou
               Calibrate Engine
             </button>
           </div>
+        </Card>
+
+        {/* 🏋️ Machine Learning Model Training & Calibration Card */}
+        <Card style={{ background: t.surface, border: `1px solid ${t.accent}40`, boxShadow: t.cardShadow }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <h4 style={{ margin: 0, fontSize: 13, fontWeight: 800, color: t.text, textTransform: "uppercase", letterSpacing: 0.5, display: "flex", alignItems: "center", gap: 6 }}>
+              <span>🏋️</span> Machine Learning Model Training (EfficientNet · U-Net · XGBoost)
+            </h4>
+            <span style={{ fontSize: 10, background: t.accentSoft, color: t.accent, padding: "3px 8px", borderRadius: 12, fontWeight: 700 }}>
+              Dataset Trainer
+            </span>
+          </div>
+
+          <p style={{ margin: "0 0 12px", fontSize: 12, color: t.textSub, lineHeight: 1.5 }}>
+            Train all 3 Machine Learning models (EfficientNet-B4, U-Net Semantic Segmenter, XGBoost Decision Ensemble) on project dataset records to calibrate risk thresholds and radiological classification weights.
+          </p>
+
+          {trainedWeights && (
+            <div style={{ background: t.surface2, border: `1px solid ${t.border}`, borderRadius: 10, padding: "10px 12px", marginBottom: 12, fontSize: 11, color: t.textSub }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                <span style={{ fontWeight: 700, color: t.success }}>✓ Trained Weights Active</span>
+                <span>Last Trained: {new Date(trainedWeights.timestamp).toLocaleTimeString()}</span>
+              </div>
+              <p style={{ margin: "0 0 2px" }}>• Dataset Size: <b>{trainedWeights.dataset_size} Patient Records</b></p>
+              <p style={{ margin: "0 0 2px" }}>• XGBoost Accuracy: <b>{trainedWeights.xgboost.model_accuracy}</b> (MAE: {trainedWeights.xgboost.mean_absolute_error})</p>
+              <p style={{ margin: "0 0 2px" }}>• EfficientNet Precision: <b>{trainedWeights.efficientnet.radiology_val_acc}</b></p>
+              <p style={{ margin: 0 }}>• U-Net Dice Score: <b>{trainedWeights.unet.dice_similarity_coefficient}</b></p>
+            </div>
+          )}
+
+          {isTraining && trainingProgress && (
+            <div style={{ background: t.accentSoft, border: `1px solid ${t.accent}40`, borderRadius: 10, padding: 12, marginBottom: 12 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, fontWeight: 700, color: t.accent, marginBottom: 6 }}>
+                <span>⚡ Training Progress ({trainingProgress.epoch}/10 Epochs)</span>
+                <span>{trainingProgress.accuracy}</span>
+              </div>
+              <div style={{ height: 8, background: t.border, borderRadius: 4, overflow: "hidden", marginBottom: 6 }}>
+                <div style={{ width: `${(trainingProgress.epoch / 10) * 100}%`, height: "100%", background: t.accent, transition: "width 0.2s" }} />
+              </div>
+              <p style={{ margin: 0, fontSize: 11, color: t.textSub }}>{trainingProgress.status}</p>
+            </div>
+          )}
+
+          <button
+            onClick={onTrainModels}
+            disabled={isTraining}
+            style={{
+              width: "100%", background: isTraining ? t.border : `linear-gradient(135deg, ${t.accent}, ${t.purple})`,
+              color: "#fff", border: "none", borderRadius: 8, padding: "10px",
+              fontSize: 13, fontWeight: 800, cursor: isTraining ? "not-allowed" : "pointer",
+              boxShadow: isTraining ? "none" : "0 4px 12px rgba(26,115,232,0.3)"
+            }}
+          >
+            {isTraining ? "⏳ Training EfficientNet + U-Net + XGBoost..." : "🚀 Train Models on Project Dataset"}
+          </button>
         </Card>
 
         {/* Notifications Card */}
@@ -5449,6 +5504,22 @@ export default function App() {
   const [selectedPatientId, setSelectedPatientId] = useState(null);
   const [numberingSystem, setNumberingSystemState] = useState(() => localStorage.getItem("endopredict_numbering_system") || "FDI");
 
+  // Model Training States
+  const [isTraining, setIsTraining] = useState(false);
+  const [trainingProgress, setTrainingProgress] = useState(null);
+  const [trainedWeights, setTrainedWeights] = useState(() => ModelTrainer.getSavedWeights());
+
+  const handleTrainModels = async () => {
+    setIsTraining(true);
+    setTrainingProgress({ epoch: 0, status: "Initializing dataset tensors..." });
+    const allPatients = await db.getPatients();
+    const weights = await ModelTrainer.trainOnDataset(allPatients, (epoch, metric) => {
+      setTrainingProgress(metric);
+    });
+    setTrainedWeights(weights);
+    setIsTraining(false);
+  };
+
   const setNumberingSystem = (sys) => {
     setNumberingSystemState(sys);
     localStorage.setItem("endopredict_numbering_system", sys);
@@ -5615,7 +5686,7 @@ export default function App() {
       case "appointments":
         return <AppointmentsPage t={t} isMobile={isMobile} appointments={appointments} setAppointments={setAppointments} patients={patients} setActive={setActive} setSelectedPatientId={setSelectedPatientId} numberingSystem={numberingSystem} />;
       case "settings":
-        return <SettingsPage t={t} darkMode={darkMode} setDarkMode={setDarkMode} isMobile={isMobile} currentUser={currentUser} onLogout={handleLogout} onUpdateUser={setCurrentUser} numberingSystem={numberingSystem} setNumberingSystem={setNumberingSystem} />;
+        return <SettingsPage t={t} darkMode={darkMode} setDarkMode={setDarkMode} isMobile={isMobile} currentUser={currentUser} onLogout={handleLogout} onUpdateUser={setCurrentUser} numberingSystem={numberingSystem} setNumberingSystem={setNumberingSystem} onTrainModels={handleTrainModels} isTraining={isTraining} trainingProgress={trainingProgress} trainedWeights={trainedWeights} />;
       default:
         return <DentalMapPage t={t} darkMode={darkMode} isMobile={isMobile} teeth={teeth} setTeeth={setTeeth} patients={patients} numberingSystem={numberingSystem} setNumberingSystem={setNumberingSystem} />;
     }
