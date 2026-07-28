@@ -2,6 +2,10 @@
   "appId": "com.endopredict.ai",
   "appName": "EndoPredict AI",
   "webDir": "dist",
+  "server": {
+    "url": "http://192.168.32.56:5173",
+    "cleartext": true
+  },
   "bundledWebRuntime": false,
   "ios": {
     "contentInset": "always",
